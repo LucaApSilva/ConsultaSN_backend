@@ -8,6 +8,13 @@ export async function searchCnpj(req: Request, res: Response) {
 
     const listCnpjs = cnpjs.split(',').map((cnpj: string) => cnpj.trim())
 
+    for (const cnpj of listCnpjs) {
+        if (cnpj.length > 1) {
+            let index = listCnpjs.indexOf(cnpj)
+            listCnpjs.splice(index + 2, 1)
+        }
+    }
+
     let response = []
 
     function sleep(ms: number) {
