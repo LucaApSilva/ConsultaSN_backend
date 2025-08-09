@@ -9,9 +9,11 @@ export async function searchCnpj(req: Request, res: Response) {
     const listCnpjs = cnpjs.split(',').map((cnpj: string) => cnpj.trim())
 
     for (const cnpj of listCnpjs) {
-        if (cnpj.length > 1) {
+        if (cnpj.length < 2) {
             let index = listCnpjs.indexOf(cnpj)
-            listCnpjs.splice(index + 2, 1)
+            console.log(index);
+
+            listCnpjs.splice(index, 1)
         }
     }
 
