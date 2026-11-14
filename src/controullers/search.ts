@@ -6,7 +6,7 @@ export async function searchCnpj(req: Request, res: Response) {
 
     let { cnpjs } = req.body
 
-    const listCnpjs = cnpjs.split(';').map((cnpj: string) => cnpj.trim())
+    const listCnpjs = cnpjs.split(',').map((cnpj: string) => cnpj.trim())
 
     for (const cnpj of listCnpjs) {
         if (cnpj.length < 2) {
@@ -15,6 +15,8 @@ export async function searchCnpj(req: Request, res: Response) {
             listCnpjs.splice(index, 1)
         }
     }
+
+    console.log(listCnpjs)
 
     let response = []
 
