@@ -11,7 +11,6 @@ export async function searchCnpj(req: Request, res: Response) {
     for (const cnpj of listCnpjs) {
         if (cnpj.length < 2) {
             let index = listCnpjs.indexOf(cnpj)
-            console.log(index);
 
             listCnpjs.splice(index, 1)
         }
@@ -36,15 +35,15 @@ export async function searchCnpj(req: Request, res: Response) {
                     SimplesNacional: office.company.simples?.optant ?? false
                 })
 
-                await sleep(12000)
+                if (i < listCnpjs.length) {
+                    await sleep(12000)
+                }
             }
 
             res.json(response)
 
 
         } else {
-
-            await sleep(12000)
 
             const cnpja = new CnpjaOpen()
             const office = await cnpja.office.read({ taxId: listCnpjs[0] })
