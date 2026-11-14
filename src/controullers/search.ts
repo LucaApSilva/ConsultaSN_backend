@@ -35,7 +35,7 @@ export async function searchCnpj(req: Request, res: Response) {
                     SimplesNacional: office.company.simples?.optant ?? false
                 })
 
-                if (i < listCnpjs.length) {
+                if (i == 299) {
                     await sleep(12000)
                 }
             }
