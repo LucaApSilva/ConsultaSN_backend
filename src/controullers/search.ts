@@ -1,4 +1,3 @@
-import { CnpjaOpen } from "@cnpja/sdk"
 import { Request, Response } from "express"
 
 
@@ -6,7 +5,7 @@ export async function searchCnpj(req: Request, res: Response) {
 
     let { cnpjs } = req.body
 
-    const listCnpjs = cnpjs.split(',').map((cnpj: string) => cnpj.trim())
+    const listCnpjs = cnpjs.split(';').map((cnpj: string) => cnpj.trim())
 
     for (const cnpj of listCnpjs) {
         if (cnpj.length < 2) {
@@ -16,8 +15,6 @@ export async function searchCnpj(req: Request, res: Response) {
         }
     }
 
-    console.log(listCnpjs)
-
     let response = []
 
     function sleep(ms: number) {
@@ -25,38 +22,30 @@ export async function searchCnpj(req: Request, res: Response) {
     }
 
     try {
-        if (listCnpjs.length > 1) {
-            for (let i = 0; i < listCnpjs.length; i++) {
-                const cnpj = listCnpjs[i];
+        for (let i = 0; i < listCnpjs.length; i++) {
+            const cnpj = listCnpjs[i];
 
-                const cnpja = new CnpjaOpen()
-                const office = await cnpja.office.read({ taxId: cnpj })
+            console.log(cnpj)
 
-                response.push({
-                    Cnpj: office.taxId,
-                    SimplesNacional: office.company.simples?.optant ?? false
-                })
+            const responseApi = await fetch(`https://kitana.opencnpj.com/cnpj/${cnpj}`)
 
-                if (i == 299) {
-                    await sleep(12000)
-                }
+            if (!responseApi.ok) {
+                throw new Error(`Erro HTTP: ${responseApi.status}`)
             }
 
-            res.json(response)
+            const resultado = await responseApi.json()
 
-
-        } else {
-
-            const cnpja = new CnpjaOpen()
-            const office = await cnpja.office.read({ taxId: listCnpjs[0] })
-
-            res.json({
-                cnpj: office.taxId,
-                simplesNacional: office.company.simples?.optant ?? false
+            response.push({
+                Cnpj: resultado.data.cnpj,
+                SimplesNacional: resultado.data.opcaoSimples
             })
 
+            await sleep(500)
 
         }
+
+        res.json(response)
+
     } catch (error) {
         res.json({
             mensagem: 'Erro ao consultar os CNPJs',
